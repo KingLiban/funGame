@@ -1,2 +1,2 @@
 # funGame
-Fun video game
+Fun video game project
