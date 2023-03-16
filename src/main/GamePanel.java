@@ -11,23 +11,32 @@
     public class GamePanel extends JPanel{
         MouseInputs mouseInputs = new MouseInputs(this);
         KeyboardInputs keyboardInputs = new KeyboardInputs(this);
+
         private float xDelta = 100;
         private float yDelta = 100;
         private float xDir = 0.03f;
         private float yDir = 0.03f;
         private int frames = 0;
         private long lastCheck = 0;
-        private Color color = new Color(100, 25, 40);
+        private Color color = new Color(255, 107, 146);
         private Random random;
         public GamePanel(){
             setFocusable(true);
             requestFocus(true);
             random = new Random();
+            setPanelSize();
             addKeyListener(keyboardInputs);
             addMouseListener(mouseInputs);
             addMouseMotionListener(mouseInputs);
 
         }
+        private void setPanelSize() {
+            Dimension size = new Dimension(1280, 800);
+            setMinimumSize(size);
+            setPreferredSize();
+            setMaximumSize();
+        }
+
 
         public void changeXDelta(int value) {
             this.xDelta += value;
@@ -47,12 +56,7 @@
             g.setColor(color);
             g.fillRect((int) xDelta, (int) yDelta,50,60);
             repaint();
-            frames++;
-            if(System.currentTimeMillis() - lastCheck >= 1000){
-                lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames);
-                frames = 0;
-            }
+            Toolkit.getDefaultToolkit().sync();
         }
 
         private void updateRectangle() {
@@ -75,4 +79,5 @@
             int b = random.nextInt(255);;
             return new Color(r, g, b);
         }
+        
     }
