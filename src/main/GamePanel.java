@@ -5,12 +5,17 @@
     import java.awt.*;
     import java.awt.event.KeyEvent;
     import java.awt.event.KeyListener;
+    import java.awt.image.BufferedImage;
+    import java.io.IOException;
+    import java.io.InputStream;
     import java.util.Random;
+    import javax.imageio.ImageIO;
     import javax.swing.JPanel;
 
     public class GamePanel extends JPanel{
         MouseInputs mouseInputs = new MouseInputs(this);
         KeyboardInputs keyboardInputs = new KeyboardInputs(this);
+        private BufferedImage image, subImage;
 
         private float xDelta = 100;
         private float yDelta = 100;
@@ -18,23 +23,45 @@
         private float yDir = 0.03f;
         private int frames = 0;
         private long lastCheck = 0;
-        private Color color = new Color(255, 107, 146);
-        private Random random;
+
         public GamePanel(){
             setFocusable(true);
             requestFocus(true);
-            random = new Random();
+            importImg();
             setPanelSize();
             addKeyListener(keyboardInputs);
             addMouseListener(mouseInputs);
             addMouseMotionListener(mouseInputs);
 
         }
+
+        private void importImg() {
+            InputStream is = getClass().getResourceAsStream("/SpriteZoro.png");
+            if (is == null) {
+                System.err.println("Could not find or open image file.");
+                return;
+            }
+            try {
+                image = ImageIO.read(is);
+            } catch (IOException e){
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                System.err.println("Input stream is null.");
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         private void setPanelSize() {
             Dimension size = new Dimension(1280, 800);
             setMinimumSize(size);
-            setPreferredSize();
-            setMaximumSize();
+            setPreferredSize(size);
+            setMaximumSize(size);
         }
 
 
@@ -52,32 +79,9 @@
         }
         public void paintComponent(Graphics g){
             super.paintComponent(g);
-            updateRectangle();
-            g.setColor(color);
-            g.fillRect((int) xDelta, (int) yDelta,50,60);
-            repaint();
+            subImage = image.getSubimage(1*64, 8*40, 64, 40);
+            g.drawImage(subImage, 0 , 0, 128, 80, null);
             Toolkit.getDefaultToolkit().sync();
-        }
-
-        private void updateRectangle() {
-            xDelta+=xDir;
-            if(xDelta > 400 || xDelta < 0){
-                xDir*=-1;
-                color = getRndColor();
-            }
-            yDelta+=yDir;
-            if(yDelta > 400 || yDelta < 0){
-                yDir*=-1;
-                color = getRndColor();
-            }
-
-        }
-
-        private Color getRndColor() {
-            int r = random.nextInt(255);
-            int g = random.nextInt(255);;
-            int b = random.nextInt(255);;
-            return new Color(r, g, b);
         }
         
     }
